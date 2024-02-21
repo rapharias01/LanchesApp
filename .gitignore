@@ -12,6 +12,7 @@ build/
 # Ignorar arquivos de configuração sensíveis
 appsettings.json
 appsettings.Development.json
+*.csproj.user
 
 # Ignorar pastas de pacotes NuGet
 packages/
