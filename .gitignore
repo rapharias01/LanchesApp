@@ -1,0 +1,24 @@
+# Ignorar configurações da IDE
+.vs/
+.vscode/
+.idea/
+
+# Ignorar pastas de compilação
+bin/
+obj/
+out/
+build/
+
+# Ignorar arquivos de configuração sensíveis
+appsettings.json
+appsettings.Development.json
+
+# Ignorar pastas de pacotes NuGet
+packages/
+
+# Ignorar arquivos temporários e de backup
+*~
+*.bak
+
+# Ignorar arquivos de log
+*.log
