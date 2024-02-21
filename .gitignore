@@ -12,7 +12,6 @@ build/
 # Ignorar arquivos de configuração sensíveis
 appsettings.json
 appsettings.Development.json
-LanchesApp.csproj.user
 
 # Ignorar pastas de pacotes NuGet
 packages/
@@ -23,3 +22,6 @@ packages/
 
 # Ignorar arquivos de log
 *.log
+
+# Ignorar arquivos específicos do usuário do projeto .NET
+*.csproj.user
