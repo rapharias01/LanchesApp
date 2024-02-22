@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using LanchesApp.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace LanchesApp
 {
@@ -21,6 +22,10 @@ namespace LanchesApp
         {
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddTransient<ILancheRepository, LancheRepository>();
             services.AddTransient<ICategoriaRepository, CategoriaRepository>();
@@ -52,6 +57,9 @@ namespace LanchesApp
             app.UseRouting();
 
             app.UseSession();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseAuthorization();
 
