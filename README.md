@@ -20,11 +20,6 @@ Este projeto está sendo desenvolvido como uma forma de aplicar conhecimentos ad
 - Sistema de Login
 - Aperfeiçoamento das funcionalidades existentes e implementação de novas funcionalidades.
 - Otimização da experiência do usuário.
-
-## Licença
-
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE.md](LICENSE.md) para mais detalhes.
-
 ---
 
 Desenvolvido por rapharias01
