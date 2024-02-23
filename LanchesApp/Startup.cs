@@ -6,6 +6,8 @@ using System;
 using LanchesApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using NuGet.Protocol;
+using LanchesApp.Services;
 
 namespace LanchesApp
 {
@@ -30,6 +32,17 @@ namespace LanchesApp
             services.AddTransient<ILancheRepository, LancheRepository>();
             services.AddTransient<ICategoriaRepository, CategoriaRepository>();
             services.AddTransient<IPedidoRepository, PedidoRepository>();
+            services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin",
+                    politica =>
+                    {
+                        politica.RequireRole("Admin");
+                    });
+            });
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped(sp => CarrinhoCompra.GetCarrinho(sp));
 
@@ -40,7 +53,7 @@ namespace LanchesApp
 
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISeedUserRoleInitial seedUserRoleInitial)
         {
             if (env.IsDevelopment())
             {
@@ -56,6 +69,9 @@ namespace LanchesApp
             app.UseStaticFiles();
             app.UseRouting();
 
+            seedUserRoleInitial.SeedRoler();
+            seedUserRoleInitial.SeedUsers();
+
             app.UseSession();
 
             app.UseAuthentication();
@@ -65,6 +81,10 @@ namespace LanchesApp
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
+
                 endpoints.MapControllerRoute(
                    name: "categoriaFiltro",
                    pattern: "Lanche/{action}/{categoria?}",
