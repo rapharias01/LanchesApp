@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using NuGet.Protocol;
 using LanchesApp.Services;
+using ReflectionIT.Mvc.Paging;
+using LanchesApp.Areas.Admin.Servicos;
 
 namespace LanchesApp
 {
@@ -26,14 +28,25 @@ namespace LanchesApp
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
+                 .AddEntityFrameworkStores<AppDbContext>()
+                 .AddDefaultTokenProviders();
+
+            //services.Configure<IdentityOptions>(options =>
+            //{
+            //    // Default Password settings.
+            //    options.Password.RequireDigit = false;
+            //    options.Password.RequireLowercase = false;
+            //    options.Password.RequireNonAlphanumeric = false;
+            //    options.Password.RequireUppercase = false;
+            //    options.Password.RequiredLength = 3;
+            //    options.Password.RequiredUniqueChars = 1;
+            //});
 
             services.AddTransient<ILancheRepository, LancheRepository>();
             services.AddTransient<ICategoriaRepository, CategoriaRepository>();
             services.AddTransient<IPedidoRepository, PedidoRepository>();
             services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
-
+            services.AddScoped<RelatorioVendasService>();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin",
@@ -48,12 +61,25 @@ namespace LanchesApp
 
             services.AddControllersWithViews();
 
-            services.AddMemoryCache();
-            services.AddSession();
+            services.AddPaging(options =>
+            {
+                options.ViewName = "Bootstrap4";
+                options.PageParameterName = "pageindex";
+            });
 
+            services.AddMemoryCache();
+            //services.AddDistributedMemoryCache();
+
+            services.AddSession();
+            //{
+            //    options.IdleTimeout = TimeSpan.FromSeconds(10);
+            //    options.Cookie.HttpOnly = true;
+            //    options.Cookie.IsEssential = true;
+            //});
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ISeedUserRoleInitial seedUserRoleInitial)
+        public void Configure(IApplicationBuilder app,
+            IWebHostEnvironment env, ISeedUserRoleInitial seedUserRoleInitial)
         {
             if (env.IsDevelopment())
             {
@@ -69,7 +95,9 @@ namespace LanchesApp
             app.UseStaticFiles();
             app.UseRouting();
 
+            //cria os perfis
             seedUserRoleInitial.SeedRoler();
+            //cria os usuários e atribui ao perfil
             seedUserRoleInitial.SeedUsers();
 
             app.UseSession();
@@ -77,13 +105,12 @@ namespace LanchesApp
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                name: "areas",
-                pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
+                 name: "areas",
+                 pattern: "{area:exists}/{controller=Admin}/{action=Index}/{id?}");
 
                 endpoints.MapControllerRoute(
                    name: "categoriaFiltro",
