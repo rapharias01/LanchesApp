@@ -2,11 +2,8 @@
 using LanchesApp.Repositories.Interfaces;
 using LanchesApp.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
 using LanchesApp.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using NuGet.Protocol;
 using LanchesApp.Services;
 using ReflectionIT.Mvc.Paging;
 using LanchesApp.Areas.Admin.Servicos;
@@ -25,28 +22,25 @@ namespace LanchesApp
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<IdentityUser, IdentityRole>()
                  .AddEntityFrameworkStores<AppDbContext>()
-                 .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders();
 
-            //services.Configure<IdentityOptions>(options =>
-            //{
-            //    // Default Password settings.
-            //    options.Password.RequireDigit = false;
-            //    options.Password.RequireLowercase = false;
-            //    options.Password.RequireNonAlphanumeric = false;
-            //    options.Password.RequireUppercase = false;
-            //    options.Password.RequiredLength = 3;
-            //    options.Password.RequiredUniqueChars = 1;
-            //});
+            services.ConfigureApplicationCookie(options => options.AccessDeniedPath = "/Home/AccessDenied");
+
+            services.Configure<ConfigurationImagens>(Configuration.GetSection("ConfigurationPastaImagens"));
+
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             services.AddTransient<ILancheRepository, LancheRepository>();
             services.AddTransient<ICategoriaRepository, CategoriaRepository>();
             services.AddTransient<IPedidoRepository, PedidoRepository>();
             services.AddScoped<ISeedUserRoleInitial, SeedUserRoleInitial>();
             services.AddScoped<RelatorioVendasService>();
+            services.AddScoped<GraficoVendasServicos>();
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin",
@@ -56,7 +50,7 @@ namespace LanchesApp
                     });
             });
 
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            
             services.AddScoped(sp => CarrinhoCompra.GetCarrinho(sp));
 
             services.AddControllersWithViews();
